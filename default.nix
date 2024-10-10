@@ -1,10 +1,26 @@
+# You will need **the best** package manager - *Nix*.
+# That's because this captcha is actually a linux package (should work on WSL2 as well).
+# 
+# Then just run
+# ```sh
+# nix-build --arg captcha \"\"
+# ```
+# 
+# Captcha should be entered like this
+# ```sh
+# nix-build --arg captcha \"foo\"
+# ```
+# 
+# Every time you run it, there will be a new `result` file containing
+# built output.
+
 { pkgs ? import <nixpkgs> {}, lib ? pkgs.lib, captcha ? "" }:
 let
 	secret = "fac";
-  command = builtins.substring 0 3 (builtins.hashString "md5" "man ls");
+	command = builtins.substring 0 3 (builtins.hashString "md5" "man ls");
 
 	wordle = remaining-captcha: guess: (
-	  if builtins.stringLength guess == 0 then "" else
+		if builtins.stringLength guess == 0 then "" else
 		if (builtins.substring 0 1 guess == builtins.substring 0 1 remaining-captcha) then "A" + (wordle (builtins.substring 1 ((builtins.stringLength remaining-captcha) - 1) remaining-captcha) (builtins.substring 1 ((builtins.stringLength guess) - 1) guess)) else
 		if (lib.strings.hasPrefix (builtins.substring 0 1 guess) command ||
 		    lib.strings.hasInfix  (builtins.substring 0 1 guess) command ||
@@ -50,8 +66,8 @@ int main() {
 
 
 	empty-captcha = (pkgs.writeText "empty" ''
-	  Enter CAPTCHA
-		It uses only characters a-f
+	Enter CAPTCHA
+	It uses only characters a-f
 	'');
 	too-short = (pkgs.writeText "length" "CAPTCHA has to be 3 characters long");
 	wordle-failed = (pkgs.writeText "failed" ''
@@ -68,10 +84,10 @@ int main() {
 
 		unpackPhase = "true";
 		installPhase = ''
-			${decoder}/bin/decoder
-			${pkgs.unzip}/bin/unzip -P "KurisuMyLove" -d $out out
-			#${pkgs.unzip}/bin/unzip -d $out out
-			#cp out $out
+		${decoder}/bin/decoder
+		${pkgs.unzip}/bin/unzip -P "KurisuMyLove" -d $out out
+		#${pkgs.unzip}/bin/unzip -d $out out
+		#cp out $out
 		'';
 	};
 
